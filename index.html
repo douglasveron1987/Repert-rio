@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 Repertório T</title>
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,Helvetica,sans-serif;
+}
+body{
+  background:#0f1117;
+  color:white;
+  padding:20px;
+}
+.topo{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
+.titulo{
+  font-size:42px;
+  font-weight:bold;
+}
+.botoes{
+  display:flex;
+  gap:10px;
+}
+button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:12px 18px;
+  border-radius:10px;
+  font-size:17px;
+  cursor:pointer;
+  transition:.2s;
+}
+button:hover{
+  opacity:.9;
+}
+#lista{
+  display:flex;
+  flex-wrap:wrap;
+  gap:18px;
+}
+.card{
+  background:#1d2534;
+  border-radius:16px;
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 0 10px rgba(0,0,0,.35);
+  flex:1 1 100%;
+  max-width:100%;
+}
+.nome{
+  width:85%;
+  font-size:40px;
+  font-weight:bold;
+  line-height:1.2;
+  word-break:break-word;
+}
+.tom{
+  width:15%;
+  text-align:right;
+  font-size:65px;
+  font-weight:bold;
+  color:#ff2b2b;
+}
+/* Layout em colunas */
+.duas-colunas .card{
+  flex:1 1 calc(50% - 20px);
+  max-width:50%;
+}
+.tres-colunas .card{
+  flex:1 1 calc(33.33% - 20px);
+  max-width:33.33%;
+}
+/* Responsividade para celular */
+@media (max-width: 768px) {
+  .titulo {
+    font-size: 28px;
+  }
+  button {
+    padding: 10px 14px;
+    font-size: 15px;
+  }
+  .card {
+    flex: 1 1 100%;
+    max-width: 100%;
+    padding: 15px;
+  }
+  .nome {
+    font-size: 22px !important;
+  }
+  .tom {
+    font-size: 32px !important;
+  }
+  /* Mesmo que tenha muitas músicas, no celular fica só 1 coluna */
+  #lista.duas-colunas .card,
+  #lista.tres-colunas .card {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+  .janela {
+    width: 90%;
+  }
+  .janela input {
+    font-size: 18px;
+  }
+}
+#popup{
+  display:none;
+  position:fixed;
+  left:0;
+  top:0;
+  right:0;
+  bottom:0;
+  background:rgba(0,0,0,.75);
+  justify-content:center;
+  align-items:center;
+}
+.janela{
+  background:#1f2937;
+  padding:25px;
+  border-radius:15px;
+  width:500px;
+}
+.janela h2{
+  margin-bottom:15px;
+}
+.janela input{
+  width:100%;
+  padding:12px;
+  font-size:20px;
+  margin-bottom:15px;
+  border:none;
+  border-radius:8px;
+}
+.acoes{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+}
+</style>
+</head>
+<body>
+<div class="topo">
+  <div class="titulo">🎵 Repertório T</div>
+  <div class="botoes">
+    <button>➕ Adicionar</button>
+    <button>🖥 Tela Cheia</button>
+  </div>
+</div>
+<div id="lista"></div>
+<div id="popup">
+  <div class="janela">
+    <h2>Novo Hino</h2>
+    <input placeholder="Nome do hino">
+    <input placeholder="Tom">
+    <div class="acoes">
+      <button>Cancelar</button>
+      <button>Salvar</button>
+    </div>
+  </div>
+</div>
+<script>
+const popup=document.getElementById("popup");
+const lista=document.getElementById("lista");
+const btnAdicionar=document.querySelectorAll("button")[0];
+const btnTela=document.querySelectorAll("button")[1];
+const inputs=document.querySelectorAll("input");
+const btnCancelar=document.querySelectorAll(".acoes button")[0];
+const btnSalvar=document.querySelectorAll(".acoes button")[1];
+
+btnAdicionar.onclick=function(){
+  popup.style.display="flex";
+  inputs[0].focus();
+}
+btnCancelar.onclick=function(){
+  popup.style.display="none";
+}
+btnTela.onclick=function(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+btnSalvar.onclick=function(){
+  let nome=inputs[0].value.trim();
+  let tom=inputs[1].value.trim();
+  if(nome==""){
+    alert("Digite o nome do hino");
+    return;
+  }
+  let card=document.createElement("div");
+  card.className="card";
+  card.innerHTML=`
+    <div class="nome">${nome}</div>
+    <div class="tom">${tom}</div>
+  `;
+  lista.appendChild(card);
+  card.ondblclick=function(){
+    if(confirm("Excluir este hino?")){
+      card.remove();
+      salvarDados();
+      ajustarFonte();
+    }
+  }
+  salvarDados();
+  inputs[0].value="";
+  inputs[1].value="";
+  popup.style.display="none";
+  ajustarFonte();
+}
+//======================
+// SALVAR DADOS
+//======================
+function salvarDados(){
+  localStorage.setItem("repertorio", lista.innerHTML);
+}
+//======================
+// CARREGAR DADOS
+//======================
+window.onload=function(){
+  let dados=localStorage.getItem("repertorio");
+  if(dados){
+    lista.innerHTML=dados;
+    registrarEventos();
+    ajustarFonte();
+  }
+}
+//======================
+// EVENTOS
+//======================
+function registrarEventos(){
+  document.querySelectorAll(".card").forEach(card=>{
+    card.ondblclick=function(){
+      if(confirm("Excluir este hino?")){
+        card.remove();
+        salvarDados();
+        ajustarFonte();
+      }
+    }
+  })
+}
+//======================
+// AJUSTAR FONTE + COLUNAS
+//======================
+function ajustarFonte(){
+  let cards=document.querySelectorAll(".card");
+  let qtd=cards.length;
+  let tamanho=40;
+  let tom=60;
+  if(qtd>4){ tamanho=34; tom=54; }
+  if(qtd>7){ tamanho=28; tom=48; }
+  if(qtd>10){ tamanho=22; tom=40; }
+  cards.forEach(c=>{
+    c.querySelector(".nome").style.fontSize=tamanho+"px";
+    c.querySelector(".tom").style.fontSize=tom+"px";
+  });
+  // Ajustar colunas: no máximo 7 por coluna
+  lista.classList.remove("duas-colunas","tres-colunas");
+  if(qtd>7 && qtd<=14){
+    lista.classList.add("duas-colunas");
+  } else if(qtd>14){
+    lista.classList.add("tres-colunas");
+  }
+}
+//======================
+// ENTER
+//======================
+inputs[1].addEventListener("keydown",function(e){
+  if(e.key=="Enter"){ btnSalvar.click(); }
+});
+</script>
+</body>
+</html>
