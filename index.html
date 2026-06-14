@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🎵 Repertório T</title>
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+
 <style>
 *{
   margin:0;
@@ -73,7 +76,7 @@ button:hover{
   font-weight:bold;
   color:#ff2b2b;
 }
-/* Layout em colunas no desktop */
+/* Layout em colunas */
 .duas-colunas .card{
   flex:1 1 calc(50% - 20px);
   max-width:50%;
@@ -82,30 +85,31 @@ button:hover{
   flex:1 1 calc(33.33% - 20px);
   max-width:33.33%;
 }
-/* Responsividade para celular: 3 colunas fixas */
+/* Responsividade para celular */
 @media (max-width: 768px) {
-  #lista {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-  .card {
-    flex: none;
-    max-width: 100%;
-    padding: 12px;
-  }
-  .nome {
-    font-size: 20px !important;
-  }
-  .tom {
-    font-size: 28px !important;
-  }
   .titulo {
     font-size: 28px;
   }
   button {
     padding: 10px 14px;
     font-size: 15px;
+  }
+  .card {
+    flex: 1 1 100%;
+    max-width: 100%;
+    padding: 15px;
+  }
+  .nome {
+    font-size: 22px !important;
+  }
+  .tom {
+    font-size: 32px !important;
+  }
+  /* Mesmo que tenha muitas músicas, no celular fica só 1 coluna */
+  #lista.duas-colunas .card,
+  #lista.tres-colunas .card {
+    flex: 1 1 100%;
+    max-width: 100%;
   }
   .janela {
     width: 90%;
@@ -265,7 +269,7 @@ function ajustarFonte(){
     c.querySelector(".nome").style.fontSize=tamanho+"px";
     c.querySelector(".tom").style.fontSize=tom+"px";
   });
-  // Ajustar colunas no desktop
+  // Ajustar colunas: no máximo 7 por coluna
   lista.classList.remove("duas-colunas","tres-colunas");
   if(qtd>7 && qtd<=14){
     lista.classList.add("duas-colunas");
